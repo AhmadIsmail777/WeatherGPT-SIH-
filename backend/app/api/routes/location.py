@@ -1,9 +1,9 @@
 """Location and reverse-geocoding endpoints."""
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
-from app.services.location_service import reverse_geocode
+from app.services.location_service import LocationServiceUnavailable, geocode, reverse_geocode
 
 router = APIRouter(prefix="/location", tags=["location"])
 
@@ -14,6 +14,43 @@ class ReverseGeocodeResponse(BaseModel):
     latitude: float
     longitude: float
     location: str
+
+
+class GeocodeResponse(BaseModel):
+    """A city search result that the dashboard can use to refresh weather."""
+
+    latitude: float
+    longitude: float
+    location: str
+    timezone: str | None = None
+
+
+@router.get("/search", response_model=GeocodeResponse)
+async def search_city(
+    city: str = Query(..., min_length=1, max_length=100),
+) -> GeocodeResponse:
+    """Resolve a city name to coordinates for the weather dashboard."""
+
+    try:
+        location = await geocode(city)
+    except LocationServiceUnavailable as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="City search is temporarily unavailable. Please try again.",
+        ) from exc
+
+    if location is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Location '{city.strip()}' was not found.",
+        )
+
+    return GeocodeResponse(
+        latitude=location.latitude,
+        longitude=location.longitude,
+        location=location.label,
+        timezone=location.timezone,
+    )
 
 
 @router.get("/reverse-geocode", response_model=ReverseGeocodeResponse)

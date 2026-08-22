@@ -11,6 +11,10 @@ from app.utils.helpers import location_label
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 
 
+class LocationServiceUnavailable(RuntimeError):
+    """Raised when the geocoding provider cannot be reached."""
+
+
 # NEW
 class Location:
     """Represents a geocoded location."""
@@ -21,19 +25,31 @@ class Location:
         latitude: float,
         longitude: float,
         country: str | None = None,
+        admin1: str | None = None,
         timezone: str | None = None,
     ):
         self.name = name
         self.latitude = latitude
         self.longitude = longitude
         self.country = country
+        self.admin1 = admin1
         self.timezone = timezone
+
+    @property
+    def label(self) -> str:
+        """Return the most useful, human-readable place name supplied by Open-Meteo."""
+
+        parts = [self.name]
+        if self.admin1 and self.admin1 != self.name:
+            parts.append(self.admin1)
+        if self.country:
+            parts.append(self.country)
+        return ", ".join(parts)
 
 
 class LocationProvider(Protocol):
     """Contract for GIS/geocoding providers."""
 
-    # NEW
     async def geocode(self, city: str) -> Location | None: ...
 
     # EXISTING
@@ -50,21 +66,26 @@ class OpenMeteoLocationProvider:
 
     async def geocode(self, city: str) -> Location | None:
 
+        normalized_city = city.strip()
+        if not normalized_city:
+            return None
+
         params = {
-            "name": city,
+            "name": normalized_city,
             "count": 1,
             "language": "en",
             "format": "json",
         }
 
-        async with httpx.AsyncClient(timeout=10.0) as client:
-
-            response = await client.get(
-                GEOCODING_URL,
-                params=params,
-            )
-
-        response.raise_for_status()
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(
+                    GEOCODING_URL,
+                    params=params,
+                )
+                response.raise_for_status()
+        except httpx.HTTPError as exc:
+            raise LocationServiceUnavailable("City search is temporarily unavailable.") from exc
 
         data = response.json()
 
@@ -80,6 +101,7 @@ class OpenMeteoLocationProvider:
             latitude=result["latitude"],
             longitude=result["longitude"],
             country=result.get("country"),
+            admin1=result.get("admin1"),
             timezone=result.get("timezone"),
         )
 
@@ -97,6 +119,9 @@ class OpenMeteoLocationProvider:
 class MockLocationProvider:
     """Fallback that avoids tying routes to a GIS vendor."""
 
+    async def geocode(self, city: str) -> Location | None:
+        return None
+
     async def reverse_geocode(
         self,
         latitude: float,
@@ -110,9 +135,7 @@ class MockLocationProvider:
 async def geocode(city: str) -> Location | None:
     """Resolve a city name into coordinates."""
 
-    provider = OpenMeteoLocationProvider()
-
-    return await provider.geocode(city)
+    return await OpenMeteoLocationProvider().geocode(city)
 
 
 # EXISTING

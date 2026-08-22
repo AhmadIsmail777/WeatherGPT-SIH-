@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 
 from app.schemas.weather import ForecastResponse, WeatherResponse
-from app.services.location_service import geocode
+from app.services.location_service import LocationServiceUnavailable, geocode
 from app.services.weather_service import (
     WeatherServiceUnavailable,
     get_current_weather,
@@ -113,7 +113,13 @@ async def current_weather_by_city(
     # Step 1: Convert city name into coordinates
     # --------------------------------------------------------
 
-    location = await geocode(city)
+    try:
+        location = await geocode(city)
+    except LocationServiceUnavailable as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="City search is temporarily unavailable. Please try again.",
+        ) from exc
 
     if location is None:
 
@@ -133,7 +139,7 @@ async def current_weather_by_city(
             location.longitude,
         )
 
-        return weather
+        return weather.model_copy(update={"location": location.label})
 
     except WeatherServiceUnavailable as exc:
 

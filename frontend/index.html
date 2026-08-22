@@ -30,29 +30,40 @@
           <span class="status-dot"></span>
           <span>Connecting to weather service</span>
         </div>
-        <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle colour theme">
-          <span aria-hidden="true">◐</span>
-        </button>
+        <div class="topbar-actions">
+          <label class="sr-only" for="language-select">Choose language</label>
+          <select class="language-select" id="language-select" aria-label="Choose language">
+            <option value="en">English</option>
+            <option value="or">ଓଡ଼ିଆ</option>
+            <option value="hi">हिन्दी</option>
+            <option value="bn">বাংলা</option>
+            <option value="mr">मराठी</option>
+            <option value="te">తెలుగు</option>
+          </select>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle colour theme">
+            <span aria-hidden="true">◐</span>
+          </button>
+        </div>
       </header>
 
       <section class="hero" id="top">
         <div class="hero-copy">
-          <p class="eyebrow">YOUR WEATHER, EXPLAINED</p>
-          <h1>See what the sky is <em>actually</em> saying.</h1>
-          <p class="hero-summary">
+          <p class="eyebrow" id="hero-eyebrow">YOUR WEATHER, EXPLAINED</p>
+          <h1 id="hero-title">See what the sky is <em>actually</em> saying.</h1>
+          <p class="hero-summary" id="hero-summary">
             Live conditions, practical alerts, and an AI guide that only speaks from verified weather data.
           </p>
         </div>
         <form class="location-form" id="location-form">
-          <label for="location-search">Choose a location</label>
+          <label for="location-search" id="location-label">Choose a location</label>
           <div class="location-controls">
-            <input id="location-search" type="text" placeholder="e.g. 20.2961, 85.8245" autocomplete="off" />
-            <button class="primary-button" type="submit">Update</button>
+            <input id="location-search" type="text" placeholder="e.g. Bhubaneswar or 20.2961, 85.8245" autocomplete="off" />
+            <button class="primary-button" id="location-submit" type="submit">Update</button>
           </div>
           <button class="current-location" id="current-location" type="button">
             <span aria-hidden="true">⌖</span> Use my location
           </button>
-          <p class="form-note">Enter latitude, longitude. City search is ready for the future location provider.</p>
+          <p class="form-note" id="location-note">Enter a city name or latitude, longitude.</p>
         </form>
       </section>
 
@@ -60,7 +71,7 @@
         <article class="current-weather card card-dark" aria-labelledby="current-heading">
           <div class="card-heading-row">
             <div>
-              <p class="eyebrow muted">NOW</p>
+              <p class="eyebrow muted" id="now-label">NOW</p>
               <h2 id="current-heading" class="location-name">Loading conditions…</h2>
             </div>
             <button class="refresh-button" id="refresh-data" type="button" aria-label="Refresh weather data">↻</button>
@@ -83,7 +94,7 @@
         <article class="forecast card" aria-labelledby="forecast-heading">
           <div class="card-heading-row">
             <div>
-              <p class="eyebrow muted">OUTLOOK</p>
+              <p class="eyebrow muted" id="outlook-label">OUTLOOK</p>
               <h2 id="forecast-heading">Next 3 days</h2>
             </div>
             <span class="mini-label">VERIFIED</span>
@@ -97,12 +108,12 @@
           <div class="assistant-heading">
             <div class="sparkle" aria-hidden="true">✦</div>
             <div>
-              <p class="eyebrow muted">WEATHER GUIDE</p>
+              <p class="eyebrow muted" id="guide-label">WEATHER GUIDE</p>
               <h2 id="assistant-heading">Ask WeatherGPT</h2>
             </div>
           </div>
           <div class="chat-log" id="chat-log" aria-live="polite">
-            <div class="message assistant-message">What would you like to know about today’s weather?</div>
+            <div class="message assistant-message" id="welcome-message">What would you like to know about today’s weather?</div>
           </div>
           <form class="chat-form" id="chat-form">
             <label class="sr-only" for="chat-message">Ask a weather question</label>
@@ -115,7 +126,7 @@
         <article class="alerts card" aria-labelledby="alerts-heading">
           <div class="card-heading-row">
             <div>
-              <p class="eyebrow muted">STAY AHEAD</p>
+              <p class="eyebrow muted" id="alerts-label">STAY AHEAD</p>
               <h2 id="alerts-heading">Active alerts</h2>
             </div>
             <span class="alert-count" id="alert-count">0</span>
@@ -127,11 +138,28 @@
       </section>
 
       <section class="trust-bar" aria-label="Product benefits">
-        <div><span class="trust-icon">⌁</span><p><strong>Grounded answers</strong><br />Weather facts first, AI explanation second.</p></div>
-        <div><span class="trust-icon">◎</span><p><strong>Location-aware</strong><br />Use your coordinates for a local view.</p></div>
-        <div><span class="trust-icon">↗</span><p><strong>Built to grow</strong><br />Forecasts, alerts, GIS and voice in one place.</p></div>
+        <div><span class="trust-icon">⌁</span><p id="trust-grounded"><strong>Grounded answers</strong><br />Weather facts first, AI explanation second.</p></div>
+        <div><span class="trust-icon">◎</span><p id="trust-location"><strong>Location-aware</strong><br />Use a city or coordinates for a local view.</p></div>
+        <div><span class="trust-icon">↗</span><p id="trust-live"><strong>Live meteorological data</strong><br />Real-time conditions from the weather service.</p></div>
       </section>
     </main>
+
+    <section class="language-modal" id="language-modal" role="dialog" aria-modal="true" aria-labelledby="language-title">
+      <div class="language-dialog">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <p class="eyebrow">WEATHERGPT</p>
+        <h2 id="language-title">Choose your language</h2>
+        <p>Select the language you would like to use in the app.</p>
+        <div class="language-options">
+          <button type="button" data-language="en">English</button>
+          <button type="button" data-language="or">ଓଡ଼ିଆ</button>
+          <button type="button" data-language="hi">हिन्दी</button>
+          <button type="button" data-language="bn">বাংলা</button>
+          <button type="button" data-language="mr">मराठी</button>
+          <button type="button" data-language="te">తెలుగు</button>
+        </div>
+      </div>
+    </section>
 
     <template id="forecast-template">
       <div class="forecast-day">

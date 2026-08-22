@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     app_env: str = "development"
     debug: bool = False
     database_url: str = "postgresql+psycopg://postgres:password@localhost:5432/weathergpt"
-    openai_api_key: str | None = None
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.5-flash"
     weather_api_key: str | None = None
     weather_api_url: str | None = None
     jwt_secret_key: str = Field("change-this-development-secret", min_length=16)

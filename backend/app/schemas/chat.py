@@ -1,6 +1,11 @@
 """Conversational weather API schemas."""
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, model_validator
+
+
+SupportedLanguage = Literal["en", "or", "hi", "bn", "mr", "te"]
 
 
 class ChatRequest(BaseModel):
@@ -9,7 +14,7 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
-    language: str = Field(default="en", min_length=2, max_length=10)
+    language: SupportedLanguage = "en"
 
     @model_validator(mode="after")
     def validate_coordinate_pair(self) -> "ChatRequest":
@@ -23,4 +28,4 @@ class ChatResponse(BaseModel):
 
     response: str
     location: str | None = None
-    language: str
+    language: SupportedLanguage

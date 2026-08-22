@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="WeatherGPT: grounded weather insights, forecasts, and alerts."
+    />
+    <title>WeatherGPT — Forecast with clarity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sky-glow sky-glow-one"></div>
+    <div class="sky-glow sky-glow-two"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="WeatherGPT home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>weather<span>GPT</span></span>
+        </a>
+        <div class="api-state" id="api-state" aria-live="polite">
+          <span class="status-dot"></span>
+          <span>Connecting to weather service</span>
+        </div>
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle colour theme">
+          <span aria-hidden="true">◐</span>
+        </button>
+      </header>
+
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">YOUR WEATHER, EXPLAINED</p>
+          <h1>See what the sky is <em>actually</em> saying.</h1>
+          <p class="hero-summary">
+            Live conditions, practical alerts, and an AI guide that only speaks from verified weather data.
+          </p>
+        </div>
+        <form class="location-form" id="location-form">
+          <label for="location-search">Choose a location</label>
+          <div class="location-controls">
+            <input id="location-search" type="text" placeholder="e.g. 20.2961, 85.8245" autocomplete="off" />
+            <button class="primary-button" type="submit">Update</button>
+          </div>
+          <button class="current-location" id="current-location" type="button">
+            <span aria-hidden="true">⌖</span> Use my location
+          </button>
+          <p class="form-note">Enter latitude, longitude. City search is ready for the future location provider.</p>
+        </form>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Weather dashboard">
+        <article class="current-weather card card-dark" aria-labelledby="current-heading">
+          <div class="card-heading-row">
+            <div>
+              <p class="eyebrow muted">NOW</p>
+              <h2 id="current-heading" class="location-name">Loading conditions…</h2>
+            </div>
+            <button class="refresh-button" id="refresh-data" type="button" aria-label="Refresh weather data">↻</button>
+          </div>
+          <div class="temperature-row">
+            <div class="weather-symbol" id="weather-symbol" aria-hidden="true">◌</div>
+            <div>
+              <div class="temperature"><span id="current-temperature">—</span><sup>°C</sup></div>
+              <p id="weather-condition">Fetching verified weather</p>
+            </div>
+          </div>
+          <div class="weather-stats">
+            <div><span>HUMIDITY</span><strong id="humidity">—</strong></div>
+            <div><span>WIND</span><strong id="wind-speed">—</strong></div>
+            <div><span>RAIN</span><strong id="rain-probability">—</strong></div>
+          </div>
+          <footer class="card-footer"><span id="last-updated">Waiting for an update</span><span id="weather-source">—</span></footer>
+        </article>
+
+        <article class="forecast card" aria-labelledby="forecast-heading">
+          <div class="card-heading-row">
+            <div>
+              <p class="eyebrow muted">OUTLOOK</p>
+              <h2 id="forecast-heading">Next 3 days</h2>
+            </div>
+            <span class="mini-label">VERIFIED</span>
+          </div>
+          <div class="forecast-list" id="forecast-list" aria-live="polite">
+            <p class="loading-copy">Building the forecast…</p>
+          </div>
+        </article>
+
+        <article class="assistant-card card" aria-labelledby="assistant-heading">
+          <div class="assistant-heading">
+            <div class="sparkle" aria-hidden="true">✦</div>
+            <div>
+              <p class="eyebrow muted">WEATHER GUIDE</p>
+              <h2 id="assistant-heading">Ask WeatherGPT</h2>
+            </div>
+          </div>
+          <div class="chat-log" id="chat-log" aria-live="polite">
+            <div class="message assistant-message">What would you like to know about today’s weather?</div>
+          </div>
+          <form class="chat-form" id="chat-form">
+            <label class="sr-only" for="chat-message">Ask a weather question</label>
+            <input id="chat-message" type="text" maxlength="2000" placeholder="Will I need an umbrella?" required />
+            <button class="send-button" id="send-button" type="submit" aria-label="Send weather question">↑</button>
+          </form>
+          <p class="grounding-note"><span aria-hidden="true">✓</span> Answers are grounded in the current weather service.</p>
+        </article>
+
+        <article class="alerts card" aria-labelledby="alerts-heading">
+          <div class="card-heading-row">
+            <div>
+              <p class="eyebrow muted">STAY AHEAD</p>
+              <h2 id="alerts-heading">Active alerts</h2>
+            </div>
+            <span class="alert-count" id="alert-count">0</span>
+          </div>
+          <div id="alert-list" class="alert-list" aria-live="polite">
+            <p class="loading-copy">Checking the alert service…</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="trust-bar" aria-label="Product benefits">
+        <div><span class="trust-icon">⌁</span><p><strong>Grounded answers</strong><br />Weather facts first, AI explanation second.</p></div>
+        <div><span class="trust-icon">◎</span><p><strong>Location-aware</strong><br />Use your coordinates for a local view.</p></div>
+        <div><span class="trust-icon">↗</span><p><strong>Built to grow</strong><br />Forecasts, alerts, GIS and voice in one place.</p></div>
+      </section>
+    </main>
+
+    <template id="forecast-template">
+      <div class="forecast-day">
+        <span class="forecast-date"></span>
+        <span class="forecast-icon" aria-hidden="true"></span>
+        <span class="forecast-condition"></span>
+        <span class="forecast-rain"></span>
+        <strong class="forecast-range"></strong>
+      </div>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

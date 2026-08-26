@@ -3,28 +3,24 @@ services:
     build: .
     env_file: .env
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/weathergpt
+      MONGO_URI: mongodb://mongo:27017/weathergpt
     ports:
-      - "8000:8000"
+      - "5000:5000"
     depends_on:
-      postgres:
+      mongo:
         condition: service_healthy
 
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: weathergpt
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+  mongo:
+    image: mongo:8
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mongo_data:/data/db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d weathergpt"]
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  postgres_data:
+  mongo_data:

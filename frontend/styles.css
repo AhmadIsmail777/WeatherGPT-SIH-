@@ -136,6 +136,32 @@ h2 { margin-bottom: 0; font-size: 1.26rem; letter-spacing: -.05em; }
 .language-options button { min-height: 47px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--canvas); font-size: .86rem; font-weight: 700; }
 .language-options button:hover { border-color: var(--pine); color: white; background: var(--pine); }
 
+.account-button { min-height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: rgba(255,255,255,.62); font-size: .68rem; font-weight: 700; }
+.account-button:hover { border-color: var(--pine); color: white; background: var(--pine); }
+.location-form { position: relative; }
+.location-suggestions { position: absolute; z-index: 4; top: 92px; left: 24px; right: 90px; display: grid; gap: 2px; padding: 5px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); box-shadow: var(--shadow); }
+.location-suggestions button { padding: 9px 10px; border: 0; border-radius: 7px; color: var(--ink); background: transparent; text-align: left; font-size: .72rem; }
+.location-suggestions button:hover { color: white; background: var(--pine); }
+.chat-form { align-items: center; }
+.voice-button { width: 42px; height: 42px; flex: 0 0 42px; border: 1px solid rgba(22,59,59,.2); border-radius: 9px; color: var(--pine); background: rgba(255,255,255,.62); font-size: .95rem; }
+.voice-button:hover, .voice-button.is-listening { color: white; background: var(--alert); }
+.message { display: flex; align-items: flex-start; gap: 7px; }
+.message > span { flex: 1; }
+.speak-button { flex: 0 0 auto; padding: 0; border: 0; color: var(--pine); background: transparent; font-size: .72rem; }
+.speak-button:hover { transform: scale(1.12); }
+.auth-modal { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(12,30,30,.52); backdrop-filter: blur(5px); }
+.auth-dialog { position: relative; width: min(100%, 430px); padding: 31px; border: 1px solid rgba(22,59,59,.12); border-radius: 20px; background: var(--card); box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+.auth-dialog h2 { margin-bottom: 8px; font-size: 1.7rem; }
+.auth-description { color: var(--soft-ink); font-size: .84rem; }
+.auth-dialog form { display: grid; gap: 13px; margin-top: 20px; }
+.auth-dialog label { display: grid; gap: 6px; color: var(--ink); font-size: .75rem; font-weight: 700; }
+.auth-dialog input { height: 42px; padding: 0 11px; font-size: .8rem; }
+.auth-submit { min-height: 42px; }
+.auth-error { margin: 0; color: var(--alert); font-size: .72rem; }
+.auth-switch { margin-top: 17px; padding: 0; border: 0; color: var(--pine); background: transparent; font-size: .72rem; font-weight: 700; }
+.modal-close { position: absolute; top: 13px; right: 15px; width: 30px; height: 30px; border: 0; border-radius: 50%; color: var(--soft-ink); background: transparent; font-size: 1.35rem; }
+.modal-close:hover { color: var(--ink); background: var(--canvas); }
+
 body.dark { --ink: #eaf2eb; --soft-ink: #adc0b1; --canvas: #102425; --card: #183435; --line: #315052; --pine: #d8eddc; --mint: #356152; --shadow: 0 24px 60px rgba(0,0,0,.2); }
 body.dark .location-form, body.dark .trust-bar { background: rgba(24,52,53,.72); }
 body.dark input, body.dark .language-select { color: var(--ink); background: #1b3d3e; }
@@ -162,4 +188,6 @@ body.dark .brand-mark, body.dark .trust-icon { color: #eaf2eb; }
   .weather-symbol { width: 68px; height: 68px; font-size: 3rem; }
   .temperature { font-size: 3.45rem; }
   .language-options { grid-template-columns: 1fr; }
+  .account-button { max-width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .location-suggestions { top: 92px; left: 21px; right: 21px; }
 }

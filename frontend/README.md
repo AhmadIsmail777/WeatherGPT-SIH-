@@ -1,25 +1,11 @@
-# WeatherGPT Frontend
+# WeatherGPT client
 
-A dependency-free responsive dashboard for the WeatherGPT FastAPI backend. It consumes the existing weather, forecast, alerts, and chat endpoints and uses browser geolocation when permitted.
+The frontend is a React 19 single-page app built with Vite. It retains the dashboard's responsive design, location search, geolocation, multilingual copy, theme toggle, forecast, alerts, and grounded chat flows.
 
-## Run locally
-
-The recommended setup serves this frontend through FastAPI on the same origin. From the parent `backend/` directory, run:
+Run it from the repository root with:
 
 ```bash
-uvicorn app.main:app --reload
+npm run dev
 ```
 
-Open `http://127.0.0.1:8000` in your browser. The backend serves `index.html`, `styles.css`, and `app.js` from this directory while keeping `/api/v1/*` routes active.
-
-For standalone frontend-only work, you can still use `python -m http.server 5173`, but it is not required for normal use.
-
-## Backend connection
-
-The frontend defaults to `http://127.0.0.1:8000`. To point it to a deployed API before loading `app.js`, define:
-
-```html
-<script>window.WEATHERGPT_API_URL = "https://api.example.com";</script>
-```
-
-The deployed backend must allow the frontend origin in `CORS_ORIGINS`.
+Vite serves the client on `http://localhost:5173` and proxies `/api` and `/health` to the Express API on port `5000`. Production assets are generated with `npm run build` and are served by Express when present in `frontend/dist`.

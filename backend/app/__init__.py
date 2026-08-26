@@ -1,1 +1,0 @@
-"""WeatherGPT application package."""

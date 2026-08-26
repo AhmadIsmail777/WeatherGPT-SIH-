@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "WeatherGPT India",
+    "slug": "weathergpt-india",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "jsEngine": "jsc",
+    "scheme": "weathergpt",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "WeatherGPT uses your location to show Indian weather and safety alerts.",
+        "NSSpeechRecognitionUsageDescription": "WeatherGPT uses speech recognition to answer weather questions in your language.",
+        "NSMicrophoneUsageDescription": "WeatherGPT uses the microphone for voice weather questions."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "RECORD_AUDIO"]
+    },
+    "plugins": ["expo-location", "expo-speech-recognition"]
+  }
+}

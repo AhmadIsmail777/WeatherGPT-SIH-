@@ -1,1 +1,0 @@
-"""WeatherGPT API route modules."""

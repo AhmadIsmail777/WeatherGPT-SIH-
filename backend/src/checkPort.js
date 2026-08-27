@@ -13,6 +13,6 @@ probe.once("error", (error) => {
   process.exit(1);
 });
 
-probe.listen(config.port, "127.0.0.1", () => {
+probe.listen(config.port, config.host, () => {
   probe.close(() => process.exit(0));
 });

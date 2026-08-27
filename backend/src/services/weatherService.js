@@ -23,15 +23,33 @@ export function locationLabel(latitude, longitude) {
 function mockCurrent(latitude, longitude) {
   return {
     latitude, longitude, location: locationLabel(latitude, longitude), temperature: 28,
-    humidity: 72, wind_speed: 12.5, rain_probability: 30,
+    feels_like: 29, humidity: 72, wind_speed: 12.5, rain_probability: 30,
+    visibility: 10000, pressure: 1012, uv_index: 5,
+    sunrise: "06:00", sunset: "18:20",
     weather_condition: "Partly cloudy", recorded_at: new Date().toISOString(), source: "mock",
   };
+}
+
+function mockHourly(start, hours = 48) {
+  return Array.from({ length: hours }, (_, index) => {
+    const time = new Date(start);
+    time.setHours(start.getHours() + index, 0, 0, 0);
+    return {
+      time: time.toISOString(), temperature: 26 + Math.round(Math.sin(index / 4) * 4),
+      feels_like: 27 + Math.round(Math.sin(index / 4) * 4), humidity: 65 + (index % 5) * 3,
+      wind_speed: 10 + (index % 4) * 2, rain_probability: index % 9 === 0 ? 70 : 25,
+      precipitation: index % 9 === 0 ? 0.8 : 0, visibility: 10000, pressure: 1012,
+      uv_index: index % 24 >= 7 && index % 24 <= 17 ? 5 : 0,
+      weather_condition: index % 9 === 0 ? "Light rain" : "Partly cloudy",
+    };
+  });
 }
 
 function mockForecast(latitude, longitude, days) {
   const start = new Date();
   return {
     latitude, longitude, location: locationLabel(latitude, longitude), source: "mock",
+    hourly: mockHourly(start, Math.max(days * 24, 48)),
     forecast: Array.from({ length: days }, (_, index) => {
       const date = new Date(start);
       date.setDate(start.getDate() + index);
@@ -48,8 +66,9 @@ async function openMeteo(latitude, longitude, days) {
   const url = new URL(OPEN_METEO_URL);
   url.search = new URLSearchParams({
     latitude: String(latitude), longitude: String(longitude), timezone: "auto",
-    current: "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation_probability,weather_code",
-    daily: "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code",
+    current: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation_probability,visibility,pressure_msl,uv_index,weather_code",
+    hourly: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation_probability,precipitation,visibility,pressure_msl,uv_index,weather_code",
+    daily: "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunrise,sunset",
     forecast_days: String(days),
   });
 
@@ -63,8 +82,12 @@ async function openMeteo(latitude, longitude, days) {
     if (!current || !daily?.time?.length) throw new Error("Open-Meteo returned incomplete data");
     const currentWeather = {
       latitude, longitude, location: locationLabel(latitude, longitude),
-      temperature: current.temperature_2m, humidity: current.relative_humidity_2m,
+      temperature: current.temperature_2m, feels_like: current.apparent_temperature,
+      humidity: current.relative_humidity_2m,
       wind_speed: current.wind_speed_10m, rain_probability: current.precipitation_probability ?? null,
+      visibility: current.visibility ?? null, pressure: current.pressure_msl ?? null,
+      uv_index: current.uv_index ?? null,
+      sunrise: daily.sunrise?.[0] || null, sunset: daily.sunset?.[0] || null,
       weather_condition: weatherCodes[current.weather_code] || "Unknown weather",
       recorded_at: new Date(current.time || Date.now()).toISOString(), source: "open-meteo",
     };
@@ -73,7 +96,15 @@ async function openMeteo(latitude, longitude, days) {
       rain_probability: daily.precipitation_probability_max[index] ?? 0,
       weather_condition: weatherCodes[daily.weather_code[index]] || "Unknown weather",
     }));
-    return { current: currentWeather, forecast: { latitude, longitude, location: currentWeather.location, forecast, source: "open-meteo" } };
+    const hourly = (data.hourly?.time || []).map((time, index) => ({
+      time, temperature: data.hourly.temperature_2m[index], feels_like: data.hourly.apparent_temperature?.[index],
+      humidity: data.hourly.relative_humidity_2m?.[index], wind_speed: data.hourly.wind_speed_10m?.[index],
+      rain_probability: data.hourly.precipitation_probability?.[index] ?? 0,
+      precipitation: data.hourly.precipitation?.[index] ?? 0, visibility: data.hourly.visibility?.[index],
+      pressure: data.hourly.pressure_msl?.[index], uv_index: data.hourly.uv_index?.[index],
+      weather_condition: weatherCodes[data.hourly.weather_code[index]] || "Unknown weather",
+    }));
+    return { current: currentWeather, forecast: { latitude, longitude, location: currentWeather.location, forecast, hourly, source: "open-meteo" } };
   } catch (error) {
     throw new WeatherServiceUnavailable("Weather service is temporarily unavailable.");
   }

@@ -6,7 +6,7 @@ import { seedAlerts } from "./services/alertService.js";
 try {
   await connectDatabase();
   await seedAlerts();
-  const server = app.listen(config.port, () => console.log(`WeatherGPT MERN API listening on http://localhost:${config.port}`));
+  const server = app.listen(config.port, config.host, () => console.log(`WeatherGPT MERN API listening on http://localhost:${config.port}`));
   server.on("error", (error) => {
     console.error(`HTTP server error: ${error.message}`);
     process.exitCode = 1;

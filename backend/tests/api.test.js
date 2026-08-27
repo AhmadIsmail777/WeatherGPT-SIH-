@@ -25,7 +25,19 @@ test("current weather works offline with the mock provider", () => withServer(as
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.temperature, 28);
+  assert.equal(body.feels_like, 29);
+  assert.equal(body.pressure, 1012);
   assert.equal(body.source, "mock");
+}));
+
+test("seven-day forecast includes hourly graph data", () => withServer(async (baseUrl) => {
+  const response = await fetch(`${baseUrl}/api/v1/weather/forecast?latitude=20.2961&longitude=85.8245&days=7`);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.forecast.length, 7);
+  assert.ok(body.hourly.length >= 48);
+  assert.ok(Object.hasOwn(body.hourly[0], "temperature"));
+  assert.ok(Object.hasOwn(body.hourly[0], "rain_probability"));
 }));
 
 test("weather validates missing coordinates", () => withServer(async (baseUrl) => {

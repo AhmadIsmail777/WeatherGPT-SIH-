@@ -18,22 +18,34 @@ app.disable("x-powered-by");
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 
-app.get("/health", (req, res) => res.json({ status: "healthy", service: "WeatherGPT API", stack: "MERN" }));
+app.get("/health", (req, res) =>
+  res.json({ status: "healthy", service: "WeatherGPT API", stack: "MERN" }),
+);
 app.use("/api/v1", api);
 
 const frontendDist = path.join(projectRoot, "frontend", "dist");
 app.use(express.static(frontendDist));
 app.get("*splat", (req, res, next) => {
   if (req.path.startsWith("/api/") || req.path === "/health") return next();
-  return res.sendFile(path.join(frontendDist, "index.html"), (error) => error && next());
+  return res.sendFile(
+    path.join(frontendDist, "index.html"),
+    (error) => error && next(),
+  );
 });
 
 app.use((error, req, res, next) => {
   if (res.headersSent) return next(error);
-  if (error instanceof WeatherServiceUnavailable || error instanceof LocationServiceUnavailable) return res.status(503).json({ detail: error.message });
-  if (error instanceof IndiaLocationRequired) return res.status(422).json({ detail: error.message });
+  if (
+    error instanceof WeatherServiceUnavailable ||
+    error instanceof LocationServiceUnavailable
+  )
+    return res.status(503).json({ detail: error.message });
+  if (error instanceof IndiaLocationRequired)
+    return res.status(422).json({ detail: error.message });
   console.error(error);
-  return res.status(500).json({ detail: "The server could not complete that request." });
+  return res
+    .status(500)
+    .json({ detail: "The server could not complete that request." });
 });
 
 export default app;
